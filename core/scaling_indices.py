@@ -45,7 +45,7 @@ def concentrate(feed_mg_L: dict, recovery: float) -> dict:
     Recovery en tanto por uno (ej: 0.45 para 45%).
     Factor de concentración = 1 / (1 - recovery)
     """
-    if not 0 < recovery < 1:
+    if not 0 <= recovery < 1:
         raise ValueError("Recovery debe estar entre 0 y 1")
 
     cf = 1 / (1 - recovery)
@@ -170,3 +170,74 @@ def calculate_all_indices(
         "SR_SrSO4":         saturation_ratio_SrSO4(concentrate_mg_L),
         "SR_SiO2":          silica_saturation(concentrate_mg_L, temperature_c),
     }
+
+def scaling_profile_along_train(
+    feed_mg_L: dict,
+    total_recovery: float,
+    temperature_c: float,
+    pH: float = 7.5,
+    n_elements: int = 7
+) -> list[dict]:
+    """
+    Calcula los índices de saturación en cada elemento del tren RO.
+
+    Combina ro_concentration y scaling_indices para dar
+    el perfil completo de riesgo a lo largo del tren.
+
+    Retorna lista de dicts, uno por elemento, con:
+        - element
+        - recovery_cumulative
+        - CF
+        - índices de saturación en ese punto
+    """
+    from core.ro_concentration import concentration_profile
+
+    train_profile = concentration_profile(feed_mg_L, total_recovery, n_elements)
+
+    results = []
+    for point in train_profile:
+        indices = calculate_all_indices(
+            feed_mg_L=point["profile"],
+            recovery=0.0,          # ya está concentrado, CF=1 aquí
+            temperature_c=temperature_c,
+            pH=pH
+        )
+
+        results.append({
+            "element":             point["element"],
+            "recovery_cumulative": point["recovery_cumulative"],
+            "CF":                  point["CF"],
+            "LSI_CaCO3":           indices["LSI_CaCO3"],
+            "SR_CaSO4":            indices["SR_CaSO4"],
+            "SR_BaSO4":            indices["SR_BaSO4"],
+            "SR_SrSO4":            indices["SR_SrSO4"],
+            "SR_SiO2":             indices["SR_SiO2"],
+        })
+
+    return results
+
+
+def print_scaling_profile(profile: list[dict]) -> None:
+    """
+    Imprime el perfil de riesgo de scaling por elemento.
+    Marca con ⚠️ los índices que superan el umbral de riesgo.
+    """
+    print(f"{'Elem':>4} {'CF':>6} {'LSI':>7} {'CaSO4':>7} {'BaSO4':>7} {'SrSO4':>7} {'SiO2':>7}")
+    print("-" * 55)
+
+    for p in profile:
+        lsi_flag   = "⚠" if p["LSI_CaCO3"] > 0   else " "
+        caso4_flag = "⚠" if p["SR_CaSO4"]  > 1   else " "
+        baso4_flag = "⚠" if p["SR_BaSO4"]  > 1   else " "
+        srso4_flag = "⚠" if p["SR_SrSO4"]  > 1   else " "
+        sio2_flag  = "⚠" if p["SR_SiO2"]   > 1   else " "
+
+        print(
+            f"{p['element']:>4} "
+            f"{p['CF']:>6.3f} "
+            f"{p['LSI_CaCO3']:>6.3f}{lsi_flag} "
+            f"{p['SR_CaSO4']:>6.3f}{caso4_flag} "
+            f"{p['SR_BaSO4']:>6.3f}{baso4_flag} "
+            f"{p['SR_SrSO4']:>6.3f}{srso4_flag} "
+            f"{p['SR_SiO2']:>6.3f}{sio2_flag}"
+        )
