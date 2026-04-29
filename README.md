@@ -36,10 +36,10 @@ and a **target recovery rate**, this tool:
 ## Results
 
 ### Seasonal Conditions — Mediterranean (36°N, 14°E)
-![Seasonal Conditions](outputs/seasonal_conditions.png)
+![Seasonal Conditions](docs/images/seasonal_conditions.png)
 
 ### Scaling Risk Heatmap — Recovery 45%
-![Scaling Heatmap](outputs/scaling_heatmap.png)
+![Scaling Heatmap](docs/images/scaling_heatmap.png)
 
 **Reading the heatmap**: green = safe, yellow = near threshold, 
 red = scaling risk. Values shown are the actual index 
