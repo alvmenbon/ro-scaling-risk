@@ -17,6 +17,8 @@ import pandas as pd
 from core.water_chemistry import salinity_to_ionic_profile
 from core.scaling_indices import calculate_all_indices
 
+from pathlib import Path
+
 
 MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -118,8 +120,9 @@ def plot_seasonal_conditions(climatology: pd.DataFrame, location_name: str = "")
     ax2.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("outputs/seasonal_conditions.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    output_dir = Path(__file__).resolve().parent
+    output_dir.mkdir(exist_ok=True)
+    plt.savefig(output_dir / "seasonal_conditions.png", dpi=150, bbox_inches="tight")
     print("Guardado: outputs/seasonal_conditions.png")
 
 
@@ -141,7 +144,7 @@ def plot_scaling_heatmap(
             if not row.empty:
                 value = row[compound].values[0]
                 # Normalizar: 0=sin riesgo, 1=en umbral, >1=riesgo
-                matrix[i, j] = value / threshold
+                matrix[i, j] = value / threshold if threshold != 0 else (1.0 if value > 0 else 0.0)
 
     fig, ax = plt.subplots(figsize=(12, 4))
 
@@ -176,6 +179,8 @@ def plot_scaling_heatmap(
     ax.set_title(title, fontsize=13, fontweight="bold", pad=15)
 
     plt.tight_layout()
-    plt.savefig("outputs/scaling_heatmap.png", dpi=150, bbox_inches="tight")
+    output_dir = Path(__file__).resolve().parent
+    output_dir.mkdir(exist_ok=True)
+    plt.savefig(output_dir / "scaling_heatmap.png", dpi=150, bbox_inches="tight")
     plt.show()
     print("Guardado: outputs/scaling_heatmap.png")
