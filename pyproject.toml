@@ -19,3 +19,6 @@ dependencies = [
 
 [tool.setuptools]
 packages = ["copernicus", "core", "outputs"]
+
+[tool.poetry]
+package-mode = false
