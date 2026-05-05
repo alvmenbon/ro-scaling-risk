@@ -12,11 +12,10 @@ from outputs.risk_report import compute_monthly_risk, plot_seasonal_conditions, 
 # --- Page config ---
 st.set_page_config(
     page_title="RO Scaling Risk Estimator",
-    page_icon="🌊",
     layout="wide"
 )
 
-st.title("🌊 RO Scaling Risk Estimator")
+st.title("RO Scaling Risk Estimator")
 st.markdown("""
 Estimate scaling risk in RO membranes for any coastal location using 
 historical oceanographic data from **Copernicus Marine Service**.
@@ -144,3 +143,18 @@ if st.sidebar.button("🔍 Analyse", type="primary"):
     CaCO₃ LSI may be underestimated without real alkalinity data.
     Activity coefficients are fixed approximations for seawater ionic strength.
     """)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("""
+### About
+**RO Scaling Risk Estimator** is an open source tool for 
+process engineers working on seawater desalination projects.
+
+Built by **Álvaro Mendoza**, Process Engineer specialized 
+in water treatment and desalination.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/alvaro-mendoza-bonilla)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black)](https://github.com/alvmenbon/ro-scaling-risk)
+
+*Data source: Copernicus Marine Service (CMEMS)*
+""")
