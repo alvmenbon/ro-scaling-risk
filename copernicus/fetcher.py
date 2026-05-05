@@ -12,7 +12,20 @@ Cobertura: 1993 - presente
 
 import copernicusmarine
 import pandas as pd
+import os
 
+def _set_copernicus_credentials():
+    """
+    Configura credenciales de Copernicus desde Streamlit secrets
+    o desde variables de entorno. Solo necesario en despliegue cloud.
+    """
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and "COPERNICUSMARINE_SERVICE_USERNAME" in st.secrets:
+            os.environ["COPERNICUSMARINE_SERVICE_USERNAME"] = st.secrets["COPERNICUSMARINE_SERVICE_USERNAME"]
+            os.environ["COPERNICUSMARINE_SERVICE_PASSWORD"] = st.secrets["COPERNICUSMARINE_SERVICE_PASSWORD"]
+    except Exception:
+        pass  # En local las credenciales vienen del archivo .copernicusmarine-credentials
 
 DATASET_ID = "cmems_mod_glo_phy_my_0.083deg_P1M-m"
 
@@ -42,6 +55,8 @@ def fetch_temperature_salinity(
     start_date = f"{start_year}-01-01T00:00:00"
     end_date   = f"{end_year}-12-31T23:59:59"
 
+    _set_copernicus_credentials()
+    
     print(f"Conectando con CMEMS para ({latitude}, {longitude})...")
 
     ds = copernicusmarine.open_dataset(
