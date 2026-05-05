@@ -128,6 +128,14 @@ marine.copernicus.eu).
 
 ---
 
+## Live Demo
+
+Try it directly — no installation required:
+
+[ro-scaling-risk.streamlit.app](https://ro-scaling-risk.streamlit.app)
+
+---
+
 ## Author
 
 Álvaro Mendoza — Process Engineer, Water Sector  
