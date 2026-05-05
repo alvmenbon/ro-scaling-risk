@@ -92,6 +92,16 @@ if st.sidebar.button("🔍 Analyse", type="primary"):
             st.error(f"Error retrieving Copernicus data: {e}")
             st.stop()
 
+    # Validar que hay datos antes de continuar
+    if len(df_raw) == 0:
+        st.error("""
+        No data found for these coordinates.
+        This may happen if the location is too close to the coast,
+        in a shallow area, or outside the Copernicus dataset coverage.
+        Try adjusting the coordinates slightly offshore.
+        """)
+        st.stop()
+    
     with st.spinner("Computing scaling risk..."):
         risk_df = compute_monthly_risk(
             climatologia,
